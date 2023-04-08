@@ -5,30 +5,17 @@ if (${STEP} STREQUAL configure)
     string(REPLACE "|" ";" CONFIGURE_EXTRAS_ENCODED "${CONFIGURE_EXTRAS}")
     list(REMOVE_ITEM CONFIGURE_EXTRAS_ENCODED "")
 
+    # load the ffmpeg configuration options file
+    file(STRINGS ${FFMPEG_OPTIONS_FILE} ffmpeg_conf_options)
+
     set(CONFIGURE_COMMAND
             ./configure
-            # --sysroot=${SYSROOT}
-            # --cc=${CC}
-            # --ar=${AR}
-            # --strip=${STRIP}
-            # --ranlib=${RANLIB}
-            # --as=${AS}
-            # --nm=${NM}
-            # --target-os=android
-            # --enable-cross-compile
-            # --arch=${ARCH}
-            --disable-stripping
-            --extra-cflags=${C_FLAGS}
-            --extra-ldflags=${LD_FLAGS}
-            --disable-static
-            --disable-doc
-            --enable-shared
-            --enable-pic
             --prefix=${PREFIX}
             --incdir=${PREFIX}/include/arcana
             --build-suffix=${ARCANA_SUFFIX}
             --progs-suffix=${ARCANA_SUFFIX}
             --extra-version=${ARCANA_EXTRA_VERSION}
+            ${ffmpeg_conf_options}
             ${CONFIGURE_EXTRAS_ENCODED}
     )
 

@@ -65,90 +65,31 @@ file(
         FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
-# FFMPEG FETCH SECTION: END
-
-# ANDROID BUILD TOOLS SECTION: START
-
-# We set custom variables for all build tools in case we want to make changes to in certain situations
-# set(FFMPEG_CC ${CMAKE_C_COMPILER})
-# set(FFMPEG_CXX ${CMAKE_CXX_COMPILER})
-# set(FFMPEG_AR ${ANDROID_AR})
-# set(FFMPEG_AS ${ANDROID_ASM_COMPILER})
-
-# Taken from https://android.googlesource.com/platform/ndk/+/master/build/cmake/android.toolchain.cmake
-# Remove when toolchain actually will include it
-# set(FFMPEG_RANLIB ${ANDROID_TOOLCHAIN_PREFIX}ranlib${ANDROID_TOOLCHAIN_SUFFIX})
-# set(FFMPEG_STRIP ${ANDROID_TOOLCHAIN_ROOT}/bin/llvm-strip${ANDROID_TOOLCHAIN_SUFFIX})
-
-# Set NM manually
-# set(FFMPEG_NM ${ANDROID_TOOLCHAIN_PREFIX}nm${ANDROID_TOOLCHAIN_SUFFIX})
-
-# ANDROID BUILD TOOLS SECTION: END
-
-# ANDROID FLAGS SECTION: START
-
-# We remove --fatal-warnings in such blatant way because somebody at Google decided it's an excellent idea
-# to put it into LD flags in toolchain without any way to turn it off.
-# string(REPLACE " -Wl,--fatal-warnings" "" FFMPEG_LD_FLAGS ${CMAKE_SHARED_LINKER_FLAGS})
-
-
-# set(FFMPEG_C_FLAGS "${CMAKE_C_FLAGS} --target=${ANDROID_LLVM_TRIPLE} --gcc-toolchain=${ANDROID_TOOLCHAIN_ROOT} ${FFMPEG_EXTRA_C_FLAGS}")
-# set(FFMPEG_ASM_FLAGS "${CMAKE_ASM_FLAGS} --target=${ANDROID_LLVM_TRIPLE} ${FFMPEG_EXTRA_ASM_FLAGS}")
-# set(FFMPEG_LD_FLAGS "${FFMPEG_C_FLAGS} ${FFMPEG_LD_FLAGS} ${FFMPEG_EXTRA_LD_FLAGS}")
-
-# ANDROID FLAGS SECTION: END
-
-# MISC VARIABLES SECTION: START
-
 set(NJOBS 4)
-# set(HOST_BIN ${ANDROID_NDK}/prebuilt/${ANDROID_HOST_TAG}/bin)
-
-# MISC VARIABLES SECTION: END
-
-# FFMPEG EXTERNAL PROJECT CONFIG SECTION: START
-
-# https://trac.ffmpeg.org/ticket/4928 we must disable asm for x86 since it's non-PIC by design from FFmpeg side
-# IF (${CMAKE_ANDROID_ARCH_ABI} STREQUAL x86)
-#     list(APPEND FFMPEG_CONFIGURE_EXTRAS --disable-asm)
-# ENDIF()
 
 ExternalProject_Add(ffmpeg_target
         PREFIX ffmpeg_pref
         URL ${FFMPEG_SRC_PATH}/${FFMPEG_NAME}
         DOWNLOAD_NO_EXTRACT 1
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env
-            # PATH=${ANDROID_TOOLCHAIN_ROOT}/bin:$ENV{PATH}
             AS_FLAGS=${FFMPEG_ASM_FLAGS}
             ${CMAKE_COMMAND}
             -DSTEP:STRING=configure
-            # -DARCH:STRING=${CMAKE_SYSTEM_PROCESSOR}
-            # -DCC:STRING=${FFMPEG_CC}
-            # -DSTRIP:STRING=${FFMPEG_STRIP}
-            # -DAR:STRING=${FFMPEG_AR}
-            # -DAS:STRING=${FFMPEG_AS}
-            # -DNM:STRING=${FFMPEG_NM}
-            # -DRANLIB:STRING=${FFMPEG_RANLIB}
-            # -DSYSROOT:STRING=${CMAKE_SYSROOT}
-            -DC_FLAGS:STRING=${FFMPEG_C_FLAGS}
-            -DLD_FLAGS:STRING=${FFMPEG_LD_FLAGS}
+            -DFFMPEG_OPTIONS_FILE=${FFMPEG_OPTIONS_FILE}
             -DPREFIX:STRING=${ARCANA_STAGING_DIRECTORY}
             -DCONFIGURE_EXTRAS=${FFMPEG_CONFIGURE_EXTRAS}
             -DARCANA_SUFFIX=${ARCANA_SUFFIX}
             -DARCANA_EXTRA_VERSION=${ARCANA_EXTRA_VERSION}
         -P ffmpeg_build_system.cmake
         BUILD_COMMAND ${CMAKE_COMMAND} -E env
-            # PATH=${ANDROID_TOOLCHAIN_ROOT}/bin:$ENV{PATH}
             ${CMAKE_COMMAND}
             -DSTEP:STRING=build
             -NJOBS:STRING=${NJOBS}
-            # -DHOST_TOOLCHAIN:STRING=${HOST_BIN}
         -P ffmpeg_build_system.cmake
         BUILD_IN_SOURCE 1
         INSTALL_COMMAND ${CMAKE_COMMAND} -E env
-            # PATH=${ANDROID_TOOLCHAIN_ROOT}/bin:$ENV{PATH}
             ${CMAKE_COMMAND}
             -DSTEP:STRING=install
-            # -DHOST_TOOLCHAIN:STRING=${HOST_BIN}
         -P ffmpeg_build_system.cmake
         STEP_TARGETS copy_headers
         LOG_CONFIGURE 1

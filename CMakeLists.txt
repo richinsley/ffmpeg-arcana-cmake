@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.14)
 project(Arcana)
 
+# create ffmpeg options file
+include(ffmpeg_arcana/cmake_include/create_ffmpeg_options_file.cmake)
+set(FFMPEG_OPTIONS_FILE "${CMAKE_CURRENT_BINARY_DIR}/ffmpeg_config_options.txt")
+create_ffmpeg_options_file(. "${FFMPEG_OPTIONS_FILE}")
+
 # our build options for ffmpeg
 if(NOT DEFINED FFMPEG_CONFIGURE_EXTRAS)
     set(FFMPEG_CONFIGURE_EXTRAS )
