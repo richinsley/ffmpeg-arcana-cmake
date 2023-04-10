@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 function(adjust_pkgconf pkgpc)
-    set(PC_PATH "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/${pkgpc}${ARCANA_SUFFIX}.pc")
+    set(PC_PATH "${ARCANA_STAGING_DIRECTORY}/lib/pkgconfig/${pkgpc}${ARCANA_SUFFIX}.pc")
     if(EXISTS ${PC_PATH})
         file(READ ${PC_PATH} pcfiledata)
         string(REPLACE "${ARCANA_STAGING_DIRECTORY}" "${CMAKE_INSTALL_PREFIX}" MODIFIED_PC "${pcfiledata}")

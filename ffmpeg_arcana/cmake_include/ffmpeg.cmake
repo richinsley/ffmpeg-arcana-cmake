@@ -3,6 +3,12 @@ cmake_minimum_required(VERSION 3.14)
 # path where ffmpeg private include files will be staged
 set(FFMPEG_PRIVATE_INCLUDE_PATH ${ARCANA_STAGING_DIRECTORY}/include/arcana/libavprivate)
 
+# ensure target paths exist in staging 
+# file(MAKE_DIRECTORY ${ARCANA_STAGING_DIRECTORY}/include)
+# file(MAKE_DIRECTORY ${ARCANA_STAGING_DIRECTORY}/bin)
+# file(MAKE_DIRECTORY ${ARCANA_STAGING_DIRECTORY}/lib)
+# file(MAKE_DIRECTORY ${ARCANA_STAGING_DIRECTORY}/share)
+
 # FFMPEG FETCH SECTION: START
 set(FFMPEG_SRC_PATH ${CMAKE_BINARY_DIR})
 
@@ -74,22 +80,22 @@ ExternalProject_Add(ffmpeg_target
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env
             AS_FLAGS=${FFMPEG_ASM_FLAGS}
             ${CMAKE_COMMAND}
-            -DSTEP:STRING=configure
+            -DSTEP=configure
             -DFFMPEG_OPTIONS_FILE=${FFMPEG_OPTIONS_FILE}
-            -DPREFIX:STRING=${ARCANA_STAGING_DIRECTORY}
+            -DPREFIX=${ARCANA_STAGING_DIRECTORY}
             -DCONFIGURE_EXTRAS=${FFMPEG_CONFIGURE_EXTRAS}
             -DARCANA_SUFFIX=${ARCANA_SUFFIX}
             -DARCANA_EXTRA_VERSION=${ARCANA_EXTRA_VERSION}
         -P ffmpeg_build_system.cmake
         BUILD_COMMAND ${CMAKE_COMMAND} -E env
             ${CMAKE_COMMAND}
-            -DSTEP:STRING=build
-            -NJOBS:STRING=${NJOBS}
+            -DSTEP=build
+            -NJOBS=${NJOBS}
         -P ffmpeg_build_system.cmake
         BUILD_IN_SOURCE 1
         INSTALL_COMMAND ${CMAKE_COMMAND} -E env
             ${CMAKE_COMMAND}
-            -DSTEP:STRING=install
+            -DSTEP=install
         -P ffmpeg_build_system.cmake
         STEP_TARGETS copy_headers
         LOG_CONFIGURE 1
@@ -99,19 +105,30 @@ ExternalProject_Add(ffmpeg_target
 )
 
 ExternalProject_Get_property(ffmpeg_target SOURCE_DIR)
-# add the copy_headers external project as a step to the ffmpeg_target external project
+# add the copy_headers step to the ffmpeg_target external project
 ExternalProject_Add_Step(
         ffmpeg_target
         copy_headers
         COMMAND ${CMAKE_COMMAND}
-            -DBUILD_DIR:STRING=${SOURCE_DIR}
-            -DSOURCE_DIR:STRING=${CMAKE_CURRENT_SOURCE_DIR}
-            -DFFMPEG_NAME:STRING=${FFMPEG_NAME}
-            -DOUT:STRING=${FFMPEG_PRIVATE_INCLUDE_PATH}
-            -DSTAGING:STRING=${ARCANA_STAGING_DIRECTORY}
+            -DBUILD_DIR=${SOURCE_DIR}
+            -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+            -DFFMPEG_NAME=${FFMPEG_NAME}
+            -DOUT=${FFMPEG_PRIVATE_INCLUDE_PATH}
+            -DSTAGING=${ARCANA_STAGING_DIRECTORY}
         -P  ${CMAKE_CURRENT_SOURCE_DIR}/cmake_include/copy_headers.cmake
-        # DEPENDEES build
-        # DEPENDERS install
+        DEPENDEES install
+)
+
+ExternalProject_Get_property(ffmpeg_target SOURCE_DIR)
+# add the adjust_pkgconfig step to the ffmpeg_target external project
+ExternalProject_Add_Step(
+        ffmpeg_target
+        adjust_pkgconfig
+        COMMAND ${CMAKE_COMMAND}
+            -DARCANA_SUFFIX=${ARCANA_SUFFIX}
+            -DARCANA_STAGING_DIRECTORY=${ARCANA_STAGING_DIRECTORY}
+            -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+        -P  ${CMAKE_CURRENT_SOURCE_DIR}/cmake_include/post_install.cmake
         DEPENDEES install
 )
 
