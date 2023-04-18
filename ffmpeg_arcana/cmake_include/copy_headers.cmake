@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.10)
 
 # We will take the headers that are installed to staging and the headers from the
 # src and create a diff.  Those headers that are not installed in staging will then

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.10)
 
 function(adjust_pkgconf pkgpc)
     set(PC_PATH "${ARCANA_STAGING_DIRECTORY}/lib/pkgconfig/${pkgpc}${ARCANA_SUFFIX}.pc")

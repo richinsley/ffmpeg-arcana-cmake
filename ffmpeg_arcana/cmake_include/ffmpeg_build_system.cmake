@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.10)
 
 if (${STEP} STREQUAL configure)
     # Encoding string to list
@@ -15,6 +15,7 @@ if (${STEP} STREQUAL configure)
             --build-suffix=${ARCANA_SUFFIX}
             --progs-suffix=${ARCANA_SUFFIX}
             --extra-version=${ARCANA_EXTRA_VERSION}
+            --enable-shared
             ${ffmpeg_conf_options}
             ${CONFIGURE_EXTRAS_ENCODED}
     )
