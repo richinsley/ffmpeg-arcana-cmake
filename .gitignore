@@ -58,3 +58,4 @@ bin/
 staging/
 test_staging/
 scratch
+config.txt

@@ -21,11 +21,23 @@ if (${STEP} STREQUAL configure)
     )
 
     execute_process(COMMAND ${CONFIGURE_COMMAND}
-                    RESULT_VARIABLE FFMPEG_CONFIG_RESULT)
+                    RESULT_VARIABLE FFMPEG_CONFIG_RESULT
+                    ERROR_VARIABLE FFMPEG_ERROR_RESULT)
+    if(FFMPEG_CONFIG_RESULT AND NOT FFMPEG_CONFIG_RESULT EQUAL 0)
+        message(FATAL_ERROR "${FFMPEG_ERROR_RESULT}")
+    endif()
 elseif(${STEP} STREQUAL build)
     execute_process(COMMAND make -j${NJOBS}
-                    RESULT_VARIABLE FFMPEG_BUILD_RESULT)
+                    RESULT_VARIABLE FFMPEG_BUILD_RESULT
+                    ERROR_VARIABLE FFMPEG_ERROR_RESULT)
+    if(FFMPEG_BUILD_RESULT AND NOT FFMPEG_BUILD_RESULT EQUAL 0)
+        message(FATAL_ERROR "${FFMPEG_ERROR_RESULT}")
+    endif()
 elseif(${STEP} STREQUAL install)
     execute_process(COMMAND make install
-                    RESULT_VARIABLE FFMPEG_INSTALL_RESULT)
+                    RESULT_VARIABLE FFMPEG_INSTALL_RESULT
+                    ERROR_VARIABLE FFMPEG_ERROR_RESULT)
+    if(FFMPEG_INSTALL_RESULT AND NOT FFMPEG_INSTALL_RESULT EQUAL 0)
+        message(FATAL_ERROR "${FFMPEG_ERROR_RESULT}")
+    endif()
 endif()

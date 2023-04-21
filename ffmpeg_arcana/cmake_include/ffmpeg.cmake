@@ -3,13 +3,6 @@ cmake_minimum_required(VERSION 3.10)
 # path where ffmpeg private include files will be staged
 set(FFMPEG_PRIVATE_INCLUDE_PATH ${ARCANA_STAGING_DIRECTORY}/include/arcana/libavprivate)
 
-# ensure target paths exist in staging 
-# file(MAKE_DIRECTORY ${ARCANA_STAGING_DIRECTORY}/include)
-# file(MAKE_DIRECTORY ${ARCANA_STAGING_DIRECTORY}/bin)
-# file(MAKE_DIRECTORY ${ARCANA_STAGING_DIRECTORY}/lib)
-# file(MAKE_DIRECTORY ${ARCANA_STAGING_DIRECTORY}/share)
-
-# FFMPEG FETCH SECTION: START
 set(FFMPEG_SRC_PATH ${CMAKE_BINARY_DIR})
 
 if(NOT DEFINED ARCANA_PATCH_VERSION)
@@ -131,6 +124,4 @@ ExternalProject_Add_Step(
         -P  ${CMAKE_CURRENT_SOURCE_DIR}/cmake_include/post_install.cmake
         DEPENDEES install
 )
-
-# FFMPEG EXTERNAL PROJECT CONFIG SECTION: END
 
