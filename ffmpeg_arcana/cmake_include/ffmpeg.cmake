@@ -32,7 +32,7 @@ endif()
 
 set(ARCANA_PATCH_NAME ffmpeg_arcana_patch_${ARCANA_PATCH_VERSION}.patch)
 # https://github.com/richinsley/FFmpeg_Arcana/releases/download/arcana_n6.0/ffmpeg_arcana_patch_6.0.patch
-set(ARCANA_PATCH_URL https://github.com/richinsley/FFmpeg_Arcana/releases/download/arcana_n6.0/${ARCANA_PATCH_NAME})
+set(ARCANA_PATCH_URL https://github.com/richinsley/FFmpeg_Arcana/releases/download/arcana_n${ARCANA_PATCH_VERSION}/${ARCANA_PATCH_NAME})
 
 get_filename_component(FFMPEG_ARCHIVE_NAME ${FFMPEG_URL} NAME)
 
